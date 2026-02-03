@@ -1,66 +1,73 @@
-const title = document.querySelector('.hero-title');
-const originalText = title.dataset.text;
+document.addEventListener("DOMContentLoaded", () => {
 
-const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789#@$%&';
-let isScrambling = false;
+  const title = document.querySelector('.hero-title');
+  if (!title) return;
 
-function scrambleText() {
+  const originalText = title.dataset.text;
+  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789#@$%&';
+  let isScrambling = false;
+
+  function scrambleText() {
     if (isScrambling) return;
     isScrambling = true;
 
     let iteration = 0;
 
     const interval = setInterval(() => {
-        title.textContent = originalText
-            .split('')
-            .map((char, index) => {
-                if (index < iteration) return char;
-                return chars[Math.floor(Math.random() * chars.length)];
-            })
-            .join('');
+      title.textContent = originalText
+        .split('')
+        .map((char, index) => {
+          if (index < iteration) return char;
+          return chars[Math.floor(Math.random() * chars.length)];
+        })
+        .join('');
 
-        iteration += 0.5;
+      iteration += 0.5;
 
-        if (iteration >= originalText.length) {
-            clearInterval(interval);
-            title.textContent = originalText;
-            isScrambling = false;
-        }
+      if (iteration >= originalText.length) {
+        clearInterval(interval);
+        title.textContent = originalText;
+        isScrambling = false;
+      }
     }, 40);
-}
+  }
 
-// idle trigger — every ~5 seconds
-setInterval(scrambleText, 3000);
+  setInterval(scrambleText, 3000);
 
-const toggleBtn = document.getElementById('toggleDesigns');
-const hiddenItems = document.querySelectorAll('.design-item.is-hidden');
+  const toggleBtn = document.getElementById('toggleDesigns');
+  const hiddenItems = document.querySelectorAll('.design-item.is-hidden');
 
-let expanded = false;
+  if (toggleBtn) {
+    let expanded = false;
 
-toggleBtn.addEventListener('click', () => {
-    expanded = !expanded;
+    toggleBtn.addEventListener('click', () => {
+      expanded = !expanded;
 
-    hiddenItems.forEach(item => {
+      hiddenItems.forEach(item => {
         item.style.display = expanded ? 'block' : 'none';
-    });
+      });
 
-    toggleBtn.textContent = expanded ? 'Hide Designs' : 'Show More';
-});
+      toggleBtn.textContent = expanded ? 'Hide Designs' : 'Show More';
+    });
+  }
 
   const modal = document.getElementById('imageModal');
   const modalImg = document.getElementById('modalImage');
 
-  document.querySelectorAll('.design-item img').forEach(img => {
-    img.addEventListener('click', () => {
-      modalImg.src = img.src;
-      modal.classList.add('active');
+  if (modal && modalImg) {
+    document.querySelectorAll('.design-item img').forEach(img => {
+      img.addEventListener('click', () => {
+        modalImg.src = img.src;
+        modal.classList.add('active');
+      });
     });
-  });
 
-  // click outside image closes modal
-  modal.addEventListener('click', (e) => {
-    if (e.target === modal) {
-      modal.classList.remove('active');
-      modalImg.src = '';
-    }
-  });
+    modal.addEventListener('click', (e) => {
+      if (e.target === modal) {
+        modal.classList.remove('active');
+        modalImg.src = '';
+      }
+    });
+  }
+
+});
