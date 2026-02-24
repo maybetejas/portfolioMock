@@ -1,5 +1,4 @@
 document.addEventListener("DOMContentLoaded", () => {
-
   const title = document.querySelector('.hero-title');
   if (!title) return;
 
@@ -18,56 +17,41 @@ document.addEventListener("DOMContentLoaded", () => {
         .split('')
         .map((char, index) => {
           if (index < iteration) return char;
+          // Return a random char for the remaining indices
           return chars[Math.floor(Math.random() * chars.length)];
         })
         .join('');
 
-      iteration += 0.5;
+      iteration += 1/3; // Adjusted for smoother flow
 
       if (iteration >= originalText.length) {
         clearInterval(interval);
         title.textContent = originalText;
         isScrambling = false;
+
+        // --- THE FIX ---
+        // Wait exactly 5 seconds AFTER completion before triggering again
+        setTimeout(scrambleText, 5000); 
       }
-    }, 40);
+    }, 30);
   }
 
-  setInterval(scrambleText, 3000);
+  // Start the very first cycle
+  scrambleText();
 
-  const toggleBtn = document.getElementById('toggleDesigns');
-  const hiddenItems = document.querySelectorAll('.design-item.is-hidden');
+  // ... (Rest of your toggle and modal code remains the same)
+});
+const toggleBtn = document.getElementById("toggleBtn");
+const hiddenItems = document.querySelectorAll(".hidden-item");
 
-  if (toggleBtn) {
-    let expanded = false;
+let expanded = false;
 
-    toggleBtn.addEventListener('click', () => {
-      expanded = !expanded;
+toggleBtn.addEventListener("click", () => {
+  expanded = !expanded;
 
-      hiddenItems.forEach(item => {
-        item.style.display = expanded ? 'block' : 'none';
-      });
+  hiddenItems.forEach(item => {
+    item.style.display = expanded ? "block" : "none";
+  });
 
-      toggleBtn.textContent = expanded ? 'Hide Designs' : 'Show More';
-    });
-  }
-
-  const modal = document.getElementById('imageModal');
-  const modalImg = document.getElementById('modalImage');
-
-  if (modal && modalImg) {
-    document.querySelectorAll('.design-item img').forEach(img => {
-      img.addEventListener('click', () => {
-        modalImg.src = img.src;
-        modal.classList.add('active');
-      });
-    });
-
-    modal.addEventListener('click', (e) => {
-      if (e.target === modal) {
-        modal.classList.remove('active');
-        modalImg.src = '';
-      }
-    });
-  }
-
+  toggleBtn.innerText = expanded ? "SHOW LESS" : "SHOW MORE";
 });
