@@ -1,57 +1,87 @@
 document.addEventListener("DOMContentLoaded", () => {
-  const title = document.querySelector('.hero-title');
-  if (!title) return;
+  const scrambleEl = document.getElementById("scramble");
+  const toggleBtn = document.getElementById("toggleBtn");
+  const hiddenItems = document.querySelectorAll(".hidden-item");
+  const growthSection = document.querySelector(".growth-visual");
+  const chartBars = document.querySelectorAll(".chart-bar");
+  const backToTop = document.getElementById("backToTop");
 
-  const originalText = title.dataset.text;
-  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789#@$%&';
-  let isScrambling = false;
+  if (scrambleEl) {
+    const finalText = scrambleEl.dataset.text || scrambleEl.textContent || "";
+    const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
 
-  function scrambleText() {
-    if (isScrambling) return;
-    isScrambling = true;
+    const runScramble = () => {
+      let iteration = 0;
 
-    let iteration = 0;
+      const interval = setInterval(() => {
+        scrambleEl.textContent = finalText
+          .split("")
+          .map((char, index) => {
+            if (char === " ") {
+              return " ";
+            }
 
-    const interval = setInterval(() => {
-      title.textContent = originalText
-        .split('')
-        .map((char, index) => {
-          if (index < iteration) return char;
-          // Return a random char for the remaining indices
-          return chars[Math.floor(Math.random() * chars.length)];
-        })
-        .join('');
+            if (index < iteration) {
+              return char;
+            }
 
-      iteration += 1/3; // Adjusted for smoother flow
+            return chars[Math.floor(Math.random() * chars.length)];
+          })
+          .join("");
 
-      if (iteration >= originalText.length) {
-        clearInterval(interval);
-        title.textContent = originalText;
-        isScrambling = false;
+        iteration += 0.5;
 
-        // --- THE FIX ---
-        // Wait exactly 5 seconds AFTER completion before triggering again
-        setTimeout(scrambleText, 5000); 
-      }
-    }, 30);
+        if (iteration >= finalText.length) {
+          clearInterval(interval);
+          scrambleEl.textContent = finalText;
+
+          // Restart only after one full completed cycle.
+          setTimeout(runScramble, 5000);
+        }
+      }, 50);
+    };
+
+    runScramble();
   }
 
-  // Start the very first cycle
-  scrambleText();
+  if (toggleBtn && hiddenItems.length > 0) {
+    let expanded = false;
 
-  // ... (Rest of your toggle and modal code remains the same)
-});
-const toggleBtn = document.getElementById("toggleBtn");
-const hiddenItems = document.querySelectorAll(".hidden-item");
+    toggleBtn.addEventListener("click", () => {
+      expanded = !expanded;
 
-let expanded = false;
+      hiddenItems.forEach((item) => {
+        item.style.display = expanded ? "block" : "none";
+      });
 
-toggleBtn.addEventListener("click", () => {
-  expanded = !expanded;
+      toggleBtn.textContent = expanded ? "SHOW LESS" : "SHOW MORE";
+      toggleBtn.setAttribute("aria-expanded", String(expanded));
+    });
+  }
 
-  hiddenItems.forEach(item => {
-    item.style.display = expanded ? "block" : "none";
-  });
+  if (growthSection && chartBars.length > 0) {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          chartBars.forEach((bar) => {
+            bar.style.animationPlayState = entry.isIntersecting ? "running" : "paused";
+          });
+        });
+      },
+      { threshold: 0.4 }
+    );
 
-  toggleBtn.innerText = expanded ? "SHOW LESS" : "SHOW MORE";
+    observer.observe(growthSection);
+  }
+
+  if (backToTop) {
+    window.addEventListener("scroll", () => {
+      const shouldShow = window.scrollY > window.innerHeight * 0.8;
+      backToTop.classList.toggle("show", shouldShow);
+    });
+
+    backToTop.addEventListener("click", () => {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    });
+  }
 });
