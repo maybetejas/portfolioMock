@@ -5,6 +5,53 @@ document.addEventListener("DOMContentLoaded", () => {
   const growthSection = document.querySelector(".growth-visual");
   const chartBars = document.querySelectorAll(".chart-bar");
   const backToTop = document.getElementById("backToTop");
+  const languageToggle = document.getElementById("languageToggle");
+
+  const getGoogleTranslateCookie = () => {
+    const match = document.cookie.match(/(?:^|;\s*)googtrans=([^;]+)/);
+    return match ? decodeURIComponent(match[1]) : "";
+  };
+
+  const isHindiActive = () => getGoogleTranslateCookie().includes("/en/hi");
+
+  const updateLanguageToggleLabel = () => {
+    if (!languageToggle) {
+      return;
+    }
+
+    const hindiActive = isHindiActive();
+    languageToggle.textContent = hindiActive ? "ENGLISH" : "HINDI";
+    languageToggle.setAttribute("aria-pressed", String(hindiActive));
+  };
+
+  const setGoogleTranslateCookie = (value) => {
+    const cookieValue = `googtrans=${value};path=/;max-age=31536000`;
+    document.cookie = cookieValue;
+    document.cookie = `${cookieValue};domain=${window.location.hostname}`;
+  };
+
+  const clearGoogleTranslateCookie = () => {
+    const expires = "expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/";
+    document.cookie = `googtrans=;${expires}`;
+    document.cookie = `googtrans=;${expires};domain=${window.location.hostname}`;
+  };
+
+  const waitForTranslateSelect = (attempts = 20) =>
+    new Promise((resolve) => {
+      const check = () => {
+        const select = document.querySelector(".goog-te-combo");
+
+        if (select || attempts <= 0) {
+          resolve(select);
+          return;
+        }
+
+        attempts -= 1;
+        window.setTimeout(check, 250);
+      };
+
+      check();
+    });
 
   if (scrambleEl) {
     const finalText = scrambleEl.dataset.text || scrambleEl.textContent || "";
@@ -82,6 +129,31 @@ document.addEventListener("DOMContentLoaded", () => {
 
     backToTop.addEventListener("click", () => {
       window.scrollTo({ top: 0, behavior: "smooth" });
+    });
+  }
+
+  if (languageToggle) {
+    updateLanguageToggleLabel();
+
+    languageToggle.addEventListener("click", async () => {
+      if (isHindiActive()) {
+        clearGoogleTranslateCookie();
+        window.location.reload();
+        return;
+      }
+
+      setGoogleTranslateCookie("/en/hi");
+      updateLanguageToggleLabel();
+
+      const select = await waitForTranslateSelect();
+
+      if (!select) {
+        window.location.reload();
+        return;
+      }
+
+      select.value = "hi";
+      select.dispatchEvent(new Event("change"));
     });
   }
 });

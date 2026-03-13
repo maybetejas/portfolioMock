@@ -27,6 +27,21 @@ body {
   color: var(--text);
   font-family: "Space Grotesk", sans-serif;
   line-height: 1.6;
+  top: 0 !important;
+}
+
+#google_translate_element,
+.goog-te-banner-frame.skiptranslate,
+.VIpgJd-ZVi9od-ORHb-OEVmcd,
+iframe.goog-te-banner-frame,
+.goog-logo-link,
+.goog-te-gadget span {
+  display: none !important;
+}
+
+.goog-te-gadget {
+  color: transparent !important;
+  font-size: 0 !important;
 }
 
 h1,
@@ -65,6 +80,12 @@ nav {
   top: 0;
   width: 100%;
   z-index: 1000;
+}
+
+.nav-actions {
+  align-items: center;
+  display: flex;
+  gap: 12px;
 }
 
 .status {
@@ -111,6 +132,28 @@ nav {
     inset 0 -3px 0 rgb(0 0 0 / 30%),
     0 4px 0 rgb(0 0 0 / 80%),
     0 0 28px rgb(125 255 201 / 70%);
+}
+
+.cta-secondary {
+  background: transparent;
+  box-shadow:
+    inset 0 0 0 1px rgb(125 255 201 / 45%),
+    inset 0 -3px 0 rgb(0 0 0 / 30%),
+    0 4px 0 rgb(0 0 0 / 80%);
+  color: var(--accent-soft);
+}
+
+.cta-secondary:hover {
+  box-shadow:
+    inset 0 0 0 1px rgb(125 255 201 / 70%),
+    inset 0 -3px 0 rgb(0 0 0 / 30%),
+    0 4px 0 rgb(0 0 0 / 80%),
+    0 0 22px rgb(125 255 201 / 28%);
+}
+
+.cta-secondary[aria-pressed="true"] {
+  background: var(--accent-soft);
+  color: #000;
 }
 
 .big-btn {
@@ -228,7 +271,7 @@ nav {
 
 body:has(.img-panel:hover) > *:not(section),
 body:has(.img-panel:hover) .grid > *:not(:hover) {
-  filter: blur(6px) brightness(0.45);
+
   transition: filter 0.45s ease;
 }
 
@@ -613,6 +656,21 @@ body:has(.img-panel:hover) .grid > *:not(:hover) {
 
 /* Responsive layout */
 @media (max-width: 900px) {
+  nav {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .nav-actions {
+    width: 100%;
+  }
+
+  .nav-actions .cta {
+    flex: 1;
+    text-align: center;
+  }
+
   .stats,
   .grid,
   .growth-grid {
